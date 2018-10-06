@@ -1,0 +1,40 @@
+{
+  "name": "react-async-image",
+  "version": "1.0.0",
+  "description": "ReactJS 'img' tag rendering with loading styles, async decoding and error fallback.",
+  "main": "dist/index.js",
+  "typings": "index.d.ts",
+  "scripts": {
+    "start": "tsc --watch",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SanichKotikov/react-async-image.git"
+  },
+  "author": "Sanich Kotikov <sancho@cdrpro.ru> (https://sanichkotikov.github.io)",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "index.d.ts"
+  ],
+  "keywords": [
+    "react",
+    "react-component",
+    "component",
+    "image",
+    "async-image",
+    "async-decoding-image",
+    "img"
+  ],
+  "bugs": {
+    "url": "https://github.com/SanichKotikov/react-async-image/issues"
+  },
+  "devDependencies": {
+    "@types/react": "16.4.14",
+    "react": "16.5.2",
+    "typescript": "3.1.1"
+  },
+  "dependencies": {},
+  "homepage": "https://github.com/SanichKotikov/react-async-image"
+}
