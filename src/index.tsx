@@ -6,13 +6,14 @@ interface Props {
   src: string;
   alt?: string;
   decoding?: Decoding;
+  prefixClass?: string;
   className?: string;
   placeholder?: React.ReactNode | string;
 }
 
 interface DefaultProps {
   decoding: Decoding;
-  className: string;
+  prefixClass: string;
 }
 
 interface State {
@@ -29,7 +30,7 @@ class AsyncImage extends React.Component<Props & DefaultProps, State> {
 
   static defaultProps: DefaultProps = {
     decoding: 'async',
-    className: 'async-image'
+    prefixClass: 'async-image'
   };
 
   static getDerivedStateFromProps(props: Props, state: State) {
@@ -62,10 +63,11 @@ class AsyncImage extends React.Component<Props & DefaultProps, State> {
 
   render() {
     const { loading, error } = this.state;
-    const { className, placeholder, ...restProps } = this.props;
+    const { prefixClass, className, placeholder, ...restProps } = this.props;
 
-    const classNames = [className];
-    if (loading) classNames.push(`${className}-loading`);
+    const classNames: Array<string | undefined> = [prefixClass];
+    if (loading) classNames.push(`${prefixClass}-loading`);
+    classNames.push(className);
 
     const styles: React.CSSProperties = error ? { display: 'none' } : {};
 

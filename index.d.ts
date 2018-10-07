@@ -6,6 +6,7 @@ export interface AsyncImageProps {
   src: string;
   alt?: string;
   decoding?: AsyncImageDecoding;
+  prefixClass?: string;
   className?: string;
   placeholder?: React.ReactNode | string;
 }

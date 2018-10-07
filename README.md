@@ -19,7 +19,7 @@ const images = ['./images/picture1.jpg', './images/picture2.png'];
     <div key={index} style={{ width: 100, height: 100 }}>
       <Image
         src={src}
-        className="image"
+        prefixClass="image"
         placeholder={<div className="placeholder">oops</div>}
       />
     </div>
@@ -51,5 +51,6 @@ const images = ['./images/picture1.jpg', './images/picture2.png'];
 | src | The image URL | string | |
 | alt? | An alternative text description of the image | string | |
 | decoding? | Decoding hint to the browser | auto \| sync \| async | async |
-| className? | A class name of the image | string | async-image |
+| prefixClass? | Prefix class | string | async-image |
+| className? | Additional css class of the image | string | |
 | placeholder? | A fallback element if the image could be loaded | React.ReactNode \| string | |
