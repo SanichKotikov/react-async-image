@@ -1,89 +1,56 @@
-import * as React from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
-type Decoding = 'auto' | 'sync' | 'async';
+enum imgStatus { Loading, Loaded, Error }
+export type AsyncImageDecoding = 'auto' | 'sync' | 'async';
 
-interface Props {
+export interface IAsyncImageProps {
   src: string;
   alt?: string;
-  decoding?: Decoding;
+  decoding?: AsyncImageDecoding;
   prefixClass?: string;
   className?: string;
   placeholder?: React.ReactNode | string;
 }
 
-interface DefaultProps {
-  decoding: Decoding;
-  prefixClass: string;
-}
+const computeClassNames = (
+  status: imgStatus,
+  prefix: string = 'async-image',
+  className: string | undefined
+) => (
+  [prefix, (status === imgStatus.Loading ? prefix + '-loading': ''), className]
+    .filter(Boolean).join(' ')
+);
 
-interface State {
-  loading: boolean;
-  error: boolean;
-  src: string;
-}
+const AsyncImage: React.FunctionComponent<IAsyncImageProps> = React.memo(
+  ({ src, alt, decoding, prefixClass, className, placeholder }) => {
+    const [status, updateStatus] = useState(imgStatus.Loading);
+    useEffect(() => () => updateStatus(0), [src]);
 
-class AsyncImage extends React.Component<Props & DefaultProps, State> {
+    const onLoad = useCallback(() => updateStatus(imgStatus.Loaded), []);
+    const onError = useCallback(() => updateStatus(imgStatus.Error), []);
 
-  image: React.RefObject<HTMLImageElement> = React.createRef();
+    const classNames = useMemo(() => {
+      return computeClassNames(status, prefixClass, className);
+    }, [status, prefixClass, className]);
 
-  state: State = { loading: true, error: false, src: '' };
-
-  static defaultProps: DefaultProps = {
-    decoding: 'async',
-    prefixClass: 'async-image'
-  };
-
-  static getDerivedStateFromProps(props: Props, state: State) {
-    if (props.src !== state.src) {
-      return { loading: true, error: false, src: props.src }
-    }
-    return null;
-  }
-
-  componentDidMount() {
-    const image = this.image.current;
-
-    if (image) {
-      image.addEventListener('load', this.onLoad);
-      image.addEventListener('error', this.onError);
-    }
-  }
-
-  componentWillUnmount() {
-    const image = this.image.current;
-
-    if (image) {
-      image.removeEventListener('load', this.onLoad);
-      image.removeEventListener('error', this.onError);
-    }
-  }
-
-  onLoad = () => this.setState({ loading: false, error: false });
-  onError = () => this.setState({ loading: false, error: true });
-
-  render() {
-    const { loading, error } = this.state;
-    const { prefixClass, className, placeholder, ...restProps } = this.props;
-
-    const classNames: Array<string | undefined> = [prefixClass];
-    if (loading) classNames.push(`${prefixClass}-loading`);
-    classNames.push(className);
-
-    const styles: React.CSSProperties = error ? { display: 'none' } : {};
+    const isError = status === imgStatus.Error;
+    const styles = isError ? { display: 'none' } : {};
 
     return (
-      <React.Fragment>
+      <>
         <img
-          ref={this.image}
-          className={classNames.join(' ')}
+          alt={alt}
+          decoding={decoding || 'async'}
+          onLoad={onLoad}
+          onError={onError}
+          src={src}
+          className={classNames}
           style={styles}
-          {...restProps}
         />
-        {error && placeholder}
-      </React.Fragment>
+        {isError && placeholder}
+      </>
     );
   }
-
-}
+);
 
 export default AsyncImage;
