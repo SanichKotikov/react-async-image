@@ -1,6 +1,6 @@
 {
   "name": "react-async-image",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "ReactJS 'img' tag rendering with loading styles, async decoding and error fallback.",
   "main": "lib/index.js",
   "scripts": {
@@ -29,11 +29,11 @@
     "url": "https://github.com/SanichKotikov/react-async-image/issues"
   },
   "peerDependencies": {
-    "react": "16.8.1"
+    "react": "16.8.6"
   },
   "devDependencies": {
-    "@types/react": "16.8.2",
-    "typescript": "3.3.1"
+    "@types/react": "16.8.23",
+    "typescript": "3.5.3"
   },
   "homepage": "https://github.com/SanichKotikov/react-async-image"
 }

@@ -1,56 +1,48 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useLayoutEffect, useCallback } from 'react';
 
-enum imgStatus { Loading, Loaded, Error }
-export type AsyncImageDecoding = 'auto' | 'sync' | 'async';
+export type ImageDecoding = 'auto' | 'sync' | 'async';
+export type ImageLoading = 'auto' | 'eager' | 'lazy';
 
 export interface IAsyncImageProps {
   src: string;
   alt?: string;
-  decoding?: AsyncImageDecoding;
-  prefixClass?: string;
+  decoding?: ImageDecoding;
+  loading?: ImageLoading;
   className?: string;
-  placeholder?: React.ReactNode | string;
+  placeholder?: React.ReactElement;
 }
 
-const computeClassNames = (
-  status: imgStatus,
-  prefix: string = 'async-image',
-  className: string | undefined
-) => (
-  [prefix, (status === imgStatus.Loading ? prefix + '-loading': ''), className]
-    .filter(Boolean).join(' ')
-);
+const classNames = (className: string, loading: boolean) => {
+  return className
+    .split(/\s/)
+    .map(name => loading ? `${name} ${name}-loading` : name)
+    .join(' ');
+};
 
-const AsyncImage: React.FunctionComponent<IAsyncImageProps> = React.memo(
-  ({ src, alt, decoding, prefixClass, className, placeholder }) => {
-    const [status, updateStatus] = useState(imgStatus.Loading);
-    useEffect(() => () => updateStatus(0), [src]);
+const useStatus = (src: string): [boolean, boolean, () => void, () => void] => {
+  const [loaded, setLoaded] = useState<boolean | null>(null);
+  useLayoutEffect(() => () => setLoaded(null), [src]);
 
-    const onLoad = useCallback(() => updateStatus(imgStatus.Loaded), []);
-    const onError = useCallback(() => updateStatus(imgStatus.Error), []);
+  const onLoad = useCallback(() => setLoaded(true), []);
+  const onError = useCallback(() => setLoaded(false), []);
 
-    const classNames = useMemo(() => {
-      return computeClassNames(status, prefixClass, className);
-    }, [status, prefixClass, className]);
+  return [loaded === null, loaded === false, onLoad, onError];
+};
 
-    const isError = status === imgStatus.Error;
-    const styles = isError ? { display: 'none' } : {};
+export default React.memo<IAsyncImageProps>(
+  function AsyncImage({
+    src,
+    alt,
+    placeholder,
+    decoding = 'async',
+    loading = 'lazy',
+    className = 'async-image',
+  }) {
+    const [fetching, error, onLoad, onError] = useStatus(src);
 
-    return (
-      <>
-        <img
-          alt={alt}
-          decoding={decoding || 'async'}
-          onLoad={onLoad}
-          onError={onError}
-          src={src}
-          className={classNames}
-          style={styles}
-        />
-        {isError && placeholder}
-      </>
-    );
+    if (error && placeholder) return placeholder;
+    const props = { alt, src, decoding, loading, onLoad, onError };
+
+    return <img {...props} className={classNames(className, fetching)} />;
   }
 );
-
-export default AsyncImage;
